@@ -35,7 +35,8 @@ describe("Auth Routes", () => {
             const response = await request(app)
                 .post("/auth/sign-up")
                 .send({
-                    username: "zaid",
+                    name: "zaid",
+                    email: "zaid@example.com",
                     password: "password123"
                 });
 
@@ -43,8 +44,8 @@ describe("Auth Routes", () => {
             expect(response.statusCode).toBe(201);
 
 
-            expect(response.body.username)
-                .toBe("zaid");
+            expect(response.body.email)
+                .toBe("zaid@example.com");
 
 
             expect(response.body.hashedPassword)
@@ -54,11 +55,12 @@ describe("Auth Routes", () => {
 
 
 
-        test("does not allow duplicate usernames return 409", async () => {
+        test("does not allow duplicate emails return 409", async () => {
 
 
             await User.create({
-                username: "zaid",
+                name: "zaid",
+                email: "zaid@example.com",
                 hashedPassword: "hashedpassword"
             });
 
@@ -66,7 +68,8 @@ describe("Auth Routes", () => {
             const response = await request(app)
                 .post("/auth/sign-up")
                 .send({
-                    username: "zaid",
+                    name: "zaid",
+                    email: "zaid@example.com",
                     password: "password123"
                 });
 
@@ -76,18 +79,18 @@ describe("Auth Routes", () => {
 
 
             expect(response.body.message)
-                .toBe("Username already exists");
+                .toBe("Email already exists");
 
         });
 
-        test("does not allow signup when missing username or password", async () => {
+        test("does not allow signup when missing name, email or password", async () => {
 
 
 
             const response = await request(app)
                 .post("/auth/sign-up")
                 .send({
-                    username: "zaid",
+                    name: "zaid",
                 });
 
 
@@ -111,7 +114,8 @@ describe("Auth Routes", () => {
         beforeEach(async () => {
 
             await User.create({
-                username: "zaid",
+                name: "zaid",
+                email: "zaid@example.com",
                 hashedPassword: "$2b$12$LQv3c1y8f5k7H5x..."
             });
 
@@ -119,13 +123,13 @@ describe("Auth Routes", () => {
 
 
 
-        test("requires username and password", async () => {
+        test("requires email and password", async () => {
 
 
             const response = await request(app)
                 .post("/auth/sign-in")
                 .send({
-                    username: "zaid"
+                    email: "zaid@example.com"
                 });
 
 
@@ -135,20 +139,20 @@ describe("Auth Routes", () => {
 
             expect(response.body.message)
                 .toBe(
-                    "Username and password are required."
+                    "Email and password are required."
                 );
 
         });
 
 
 
-        test("rejects invalid username", async () => {
+        test("rejects invalid email", async () => {
 
 
             const response = await request(app)
                 .post("/auth/sign-in")
                 .send({
-                    username: "doesnotexist",
+                    email: "doesnotexist@example.com",
                     password: "password123"
                 });
 
@@ -172,7 +176,7 @@ describe("Auth Routes", () => {
             const response = await request(app)
                 .post("/auth/sign-in")
                 .send({
-                    username: "zaid",
+                    email: "zaid@example.com",
                     password: "wrongpassword"
                 });
 
