@@ -8,30 +8,19 @@ const app = require("../app");
 
 const User = require("../models/User");
 
+
 beforeAll(async () => {
     await mongoose.connect(process.env.MONGODB_URI);
-    // Wait for connection to be ready
-    await new Promise(resolve => {
-        if (mongoose.connection.readyState === 1) {
-            resolve();
-        } else {
-            mongoose.connection.once('connected', resolve);
-        }
-    });
 });
 
+
 afterEach(async () => {
-    try {
-        await User.deleteMany({});
-    } catch (error) {
-        console.error("Error in afterEach:", error);
-    }
+    await User.deleteMany({});
 });
+
 
 afterAll(async () => {
     await mongoose.connection.close();
-    // Force exit after a timeout to prevent Jest hanging
-    setTimeout(() => process.exit(0), 1000);
 });
 
 
